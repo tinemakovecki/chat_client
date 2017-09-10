@@ -8,7 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,15 +20,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.client.utils.URIBuilder;
+
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	
 	private JTextArea output;
 	private JTextField input;
 	private JTextField nicknameField;
+	private JButton loginButton;
+	private JButton logoutButton;
+	private JButton statusButton;
 
 	public ChatFrame() {
 		super();
-		this.setTitle("wat wat");
+		this.setTitle("Chat client");
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
 		
@@ -71,6 +82,61 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		nicknameConstraint.weighty = 0;
 		nicknameConstraint.fill = GridBagConstraints.HORIZONTAL;
 		pane.add(nicknamePanel, nicknameConstraint);
+		
+		// Buttons for server interaction
+		// TODO change functions to use the actual nickname
+		this.loginButton = new JButton("login");
+		this.logoutButton = new JButton("logout");
+		this.statusButton = new JButton("who's online");
+		GridBagConstraints buttonConstraint = new GridBagConstraints();
+		buttonConstraint.gridx = 1;
+		
+		// add login button and equip it with a listener/function
+		pane.add(loginButton, buttonConstraint);
+		this.loginButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					login("me");
+				} catch (ClientProtocolException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		// add logout button and equip it with a listener/function
+		pane.add(logoutButton, buttonConstraint);
+		this.logoutButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					logout("me");
+				} catch (ClientProtocolException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		// add status button and equip it with a listener/function
+		pane.add(statusButton, buttonConstraint);
+		this.statusButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String address = "http://chitchat.andrej.com/users";
+		    	ChitChat.get(address);
+			}
+		});
 	}
 
 	/**
@@ -82,8 +148,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.output.setText(chat + "\n" + person + ": " + message);
 	}
 	
+	
+	/*
+	 *  LISTENER FUNCTIONS
+	 */
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 	}
 
 	@Override
@@ -108,6 +180,58 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 	}
 	
+	
+	/*
+	 *  SERVER COMMUNICATION FUNCTIONS
+	 */
+	
+	/**
+	 * 
+	 * @param username
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public static void login (String username) throws ClientProtocolException, IOException, URISyntaxException {
+    	
+		URIBuilder builder = new URIBuilder("http://chitchat.andrej.com/users");
+		builder.addParameter("username", username);
+		URI uri = new URI(builder.toString());
+
+		String responseBody = Request.Post(uri)
+							  .execute()
+							  .returnContent()
+							  .asString();
+
+		System.out.println(responseBody);
+    }
+	
+	/**
+	 * 
+	 * @param username
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public static void logout (String username) throws URISyntaxException, ClientProtocolException, IOException {
+
+    	URIBuilder builder = new URIBuilder("http://chitchat.andrej.com/users");
+		builder.addParameter("username", username);
+		URI uri = new URI(builder.toString());
+
+		String responseBody = Request.Delete(uri)
+							  .execute()
+							  .returnContent()
+							  .asString();
+
+		System.out.println(responseBody);
+    }
+	
+	
+	/*
+	 * SETTER, GETTER AND OTHER FUNCTIONS
+	 */
+	
 	public void giveInputFocus() {
 		// gives focus in the window to the input field
 		this.input.requestFocusInWindow();
@@ -130,7 +254,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	/**
 	 * @param output the output to set
 	 */
-	// NEUPORABNO ???
 	public void setOutput(JTextArea output) {
 		this.output = output;
 	}
