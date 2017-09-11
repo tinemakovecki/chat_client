@@ -9,8 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,10 +20,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.utils.URIBuilder;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
+@SuppressWarnings("serial")
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	
 	private JTextArea output;
@@ -32,6 +33,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JButton loginButton;
 	private JButton logoutButton;
 	private JButton statusButton;
+	private JButton sendButton;
+	private JButton receiveButton;
 
 	public ChatFrame() {
 		super();
@@ -88,6 +91,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.loginButton = new JButton("login");
 		this.logoutButton = new JButton("logout");
 		this.statusButton = new JButton("who's online");
+		this.sendButton = new JButton("send");
+		this.receiveButton = new JButton("receive");
 		GridBagConstraints buttonConstraint = new GridBagConstraints();
 		buttonConstraint.gridx = 1;
 		
@@ -97,13 +102,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					ComCenter.login("me");
-				} catch (ClientProtocolException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (URISyntaxException e1) {
+				} catch (IOException | URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -116,13 +115,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					ComCenter.logout("me");
-				} catch (ClientProtocolException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (URISyntaxException e1) {
+				} catch (URISyntaxException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -134,7 +127,47 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.statusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String address = "http://chitchat.andrej.com/users";
-		    	ComCenter.get(address);
+				String jsonActiveUsers = ComCenter.get(address);
+				
+		    	// converting the data from json
+				ObjectMapper mapper = new ObjectMapper();
+		    	mapper.setDateFormat(new ISO8601DateFormat());
+		    	
+		    	TypeReference<List<User>> t = new TypeReference<List<User>>() { };
+		    	List<User> activeUsers = null;
+				try {
+					activeUsers = mapper.readValue(jsonActiveUsers, t);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+		    	System.out.println(activeUsers);
+			}
+		});
+		
+		// add send button and equip it with a listener/function
+		pane.add(sendButton, buttonConstraint);
+		this.sendButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ComCenter.sendMessage();
+				} catch (URISyntaxException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
+		// add receive button and equip it with a listener/function
+		pane.add(receiveButton, buttonConstraint);
+		this.receiveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ComCenter.recieveMessages();
+				} catch (URISyntaxException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 	}

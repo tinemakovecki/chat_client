@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.fluent.Request;
 
 public class ChitChat {
 
@@ -16,6 +15,7 @@ public class ChitChat {
 		chatFrame.pack();
 		chatFrame.giveInputFocus();
 		chatFrame.setVisible(true);
+		
 	}
 
 }
