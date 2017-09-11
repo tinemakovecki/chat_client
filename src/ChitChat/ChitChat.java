@@ -16,21 +16,6 @@ public class ChitChat {
 		chatFrame.pack();
 		chatFrame.giveInputFocus();
 		chatFrame.setVisible(true);
-		
-		// http test area
-		ChatFrame.logout("me");
 	}
-	
-	
-	public static void get (String address) { // TODO move function to ChatFrame
-    	try {
-            String hello = Request.Get(address)
-                                  .execute()
-                                  .returnContent().asString();
-            System.out.println(hello);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }

@@ -96,7 +96,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					login("me");
+					ComCenter.login("me");
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -115,7 +115,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.logoutButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					logout("me");
+					ComCenter.logout("me");
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -134,7 +134,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.statusButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String address = "http://chitchat.andrej.com/users";
-		    	ChitChat.get(address);
+		    	ComCenter.get(address);
 			}
 		});
 	}
@@ -179,53 +179,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
-	/*
-	 *  SERVER COMMUNICATION FUNCTIONS
-	 */
-	
-	/**
-	 * 
-	 * @param username
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 * @throws URISyntaxException
-	 */
-	public static void login (String username) throws ClientProtocolException, IOException, URISyntaxException {
-    	
-		URIBuilder builder = new URIBuilder("http://chitchat.andrej.com/users");
-		builder.addParameter("username", username);
-		URI uri = new URI(builder.toString());
-
-		String responseBody = Request.Post(uri)
-							  .execute()
-							  .returnContent()
-							  .asString();
-
-		System.out.println(responseBody);
-    }
-	
-	/**
-	 * 
-	 * @param username
-	 * @throws URISyntaxException
-	 * @throws ClientProtocolException
-	 * @throws IOException
-	 */
-	public static void logout (String username) throws URISyntaxException, ClientProtocolException, IOException {
-
-    	URIBuilder builder = new URIBuilder("http://chitchat.andrej.com/users");
-		builder.addParameter("username", username);
-		URI uri = new URI(builder.toString());
-
-		String responseBody = Request.Delete(uri)
-							  .execute()
-							  .returnContent()
-							  .asString();
-
-		System.out.println(responseBody);
-    }
 	
 	
 	/*
