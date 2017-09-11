@@ -15,13 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class ComCenter {
-//	private ObjectMapper mapper;
-//	
-//	public ComCenter() {
-//		this.mapper = new ObjectMapper();
-//		this.mapper.setDateFormat(new ISO8601DateFormat());
-//	}
-	
+
 	/**
 	 * 
 	 * @param username
@@ -83,9 +77,9 @@ public class ComCenter {
 	
 	// TODO fix return types for send/recieve!!!
 	// TODO add correct parameters, connect with GUI
-	public static List<Message> recieveMessages () throws URISyntaxException, ClientProtocolException, IOException {
+	public static List<Message> recieveMessages(String nickname) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
-				.addParameter("username", "me")
+				.addParameter("username", nickname)
 				.build();
 
 		String jsonReceivedMessages = Request.Get(uri)
@@ -104,13 +98,15 @@ public class ComCenter {
     	return received;
 	}
 	
-	
-	public static void sendMessage () throws URISyntaxException, ClientProtocolException, IOException {
+	// TODO add variable for recipient/global, decide where to clear input
+	public static void sendMessage(String nickname, Boolean global, String recipient, String text) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
-		        .addParameter("username", "me")
+		        .addParameter("username", nickname)
 		        .build();
 
-		String message = "{ \"global\" : false, \"recipient\" : \"me\", \"text\" : \"test234134\"}";
+		String message = "{ \"global\" :" + global + 
+				", \"recipient\" : \"" + recipient + 
+				"\", \"text\" : \"" + text + "\"}";
 
 		String responseBody = Request.Post(uri)
 		        .bodyString(message, ContentType.APPLICATION_JSON)

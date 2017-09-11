@@ -20,6 +20,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.http.client.ClientProtocolException;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
@@ -87,7 +89,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		pane.add(nicknamePanel, nicknameConstraint);
 		
 		// Buttons for server interaction
-		// TODO change functions to use the actual nickname
 		this.loginButton = new JButton("login");
 		this.logoutButton = new JButton("logout");
 		this.statusButton = new JButton("who's online");
@@ -101,7 +102,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ComCenter.login("me");
+					login();
 				} catch (IOException | URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -114,7 +115,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.logoutButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ComCenter.logout("me");
+					logout();
 				} catch (URISyntaxException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -150,7 +151,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ComCenter.sendMessage();
+					sendMessage();
 				} catch (URISyntaxException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -163,7 +164,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.receiveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ComCenter.recieveMessages();
+					recieveMessages();
 				} catch (URISyntaxException | IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -171,17 +172,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 		});
 	}
+	
 
-	/**
-	 * @param person - the person sending the message
-	 * @param message - the message content
-	 */
-	public void addMessage(String person, String message) {
-		String chat = this.output.getText();
-		this.output.setText(chat + "\n" + person + ": " + message);
-	}
-	
-	
 	/*
 	 *  LISTENER FUNCTIONS
 	 */
@@ -195,7 +187,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
-				this.addMessage(this.nicknameField.getText(), this.input.getText());
+				String nickname = this.nicknameField.getText();
+				String text = this.input.getText();
+				
+				try {
+					sendMessage();
+				} catch (URISyntaxException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				this.addMessage(nickname, text);
 				this.input.setText("");
 			}
 		}		
@@ -215,13 +217,43 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	
 	
 	/*
-	 * SETTER, GETTER AND OTHER FUNCTIONS
+	 * OTHER FUNCTIONS
 	 */
 	
+	/**
+	 * @param person - the person sending the message
+	 * @param message - the message content
+	 */
+	public void addMessage(String person, String message) {
+		String chat = this.output.getText();
+		this.output.setText(chat + "\n" + person + ": " + message);
+	}
+	
+	public void login() throws ClientProtocolException, IOException, URISyntaxException {
+		ComCenter.login(this.nicknameField.getText());
+	}
+	
+	public void logout() throws ClientProtocolException, IOException, URISyntaxException {
+		ComCenter.logout(this.nicknameField.getText());
+	}
+	
+	protected void sendMessage() throws ClientProtocolException, URISyntaxException, IOException {
+		String nickname = this.nicknameField.getText();
+		ComCenter.sendMessage(nickname, false, nickname, this.input.getText());
+	}
+	
+	protected void recieveMessages() throws ClientProtocolException, URISyntaxException, IOException {
+		ComCenter.recieveMessages(this.nicknameField.getText());
+	}
+	
+	// gives focus in the window to the input field
 	public void giveInputFocus() {
-		// gives focus in the window to the input field
 		this.input.requestFocusInWindow();
 	}
+	
+	/*
+	 * SETTERS & GETTERS
+	 */
 	
 	/**
 	 * @return the input

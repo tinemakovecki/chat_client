@@ -15,7 +15,5 @@ public class ChitChat {
 		chatFrame.pack();
 		chatFrame.giveInputFocus();
 		chatFrame.setVisible(true);
-		
 	}
-
 }
