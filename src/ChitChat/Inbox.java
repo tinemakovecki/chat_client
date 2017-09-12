@@ -16,11 +16,13 @@ public class Inbox extends TimerTask {
 		this.chat = chat;
 	}
 	
+	// start running the inbox
 	public void activate() {
 		this.timer = new Timer();
 		timer.scheduleAtFixedRate(this, 1000, 1000);
 	}
 	
+	// stop and reset inbox
 	public void stop() {
 		timer.cancel();
 		timer.purge();
@@ -29,6 +31,7 @@ public class Inbox extends TimerTask {
 	
 	@Override
 	public void run() {
+		// collecting received messages
 		String nickname = chat.getNicknameField().getText();
 		try {
 			received = ComCenter.recieveMessages(nickname);
@@ -37,12 +40,12 @@ public class Inbox extends TimerTask {
 			e.printStackTrace();
 		}
 		
+		// adding received messages to output area
 		if (received.isEmpty() != true) {
 			ListIterator<Message> iterator = received.listIterator();
 			while (iterator.hasNext()) {
 				Message message = iterator.next();
 				chat.addMessage(message);
-				System.out.println("Message added!");
 			}
 		}
 	}

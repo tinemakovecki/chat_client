@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 public class ComCenter {
 
 	/**
-	 * 
-	 * @param username
+	 * login into the server for current user
+	 * @param username - the user to be logged in
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws URISyntaxException
@@ -38,8 +38,8 @@ public class ComCenter {
     }
 	
 	/**
-	 * 
-	 * @param username
+	 * logout from the server for current user
+	 * @param username - the user to be logged out
 	 * @throws URISyntaxException
 	 * @throws ClientProtocolException
 	 * @throws IOException
@@ -59,23 +59,35 @@ public class ComCenter {
     }
 	
 	/**
-	 * 
-	 * @param address
+	 * gets information from selected site
+	 * @param address - the site source for getting information
 	 */
 	public static String get (String address) {
 		String content = null;
+		
     	try {
             content = Request.Get(address)
             		.execute().returnContent()
             		.asString();
+            
             System.out.println(content);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    	
     	return content;
     }
 	
+	/**
+	 * collects queued messages for selected user from server
+	 * @param nickname - the user receiving the messages
+	 * @return - returns the received messages as a list of Message objects
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public static List<Message> recieveMessages(String nickname) throws URISyntaxException, ClientProtocolException, IOException {
+		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 				.addParameter("username", nickname)
 				.build();
@@ -85,6 +97,7 @@ public class ComCenter {
 		                               .returnContent()
 		                               .asString();
 		
+		// transforming the received messages into a list of Message objects
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new ISO8601DateFormat());
     	
@@ -96,11 +109,23 @@ public class ComCenter {
     	return received;
 	}
 	
+	/**
+	 * sends a message with selected parameters to server
+	 * @param nickname - the person sending the message
+	 * @param global - is the message global
+	 * @param recipient - the person the message is sent to
+	 * @param text - message content
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public static void sendMessage(String nickname, Boolean global, String recipient, String text) throws URISyntaxException, ClientProtocolException, IOException {
+		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 		        .addParameter("username", nickname)
 		        .build();
-
+		
+		// formatting the message to be sent
 		String message = "{ \"global\" :" + global + 
 				", \"recipient\" : \"" + recipient + 
 				"\", \"text\" : \"" + text + "\"}";

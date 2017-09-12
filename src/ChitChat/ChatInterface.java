@@ -53,7 +53,7 @@ public class ChatInterface {
 	private JTextField nicknameField;
 	private JTextField input;
 	private final ButtonGroup onlineStatus = new ButtonGroup();
-	private JTextField recepientField;
+	private JTextField recipientField;
 	private JTextArea output;
 	private Boolean global;
 	private Inbox inbox;
@@ -171,7 +171,7 @@ public class ChatInterface {
 		getUsers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent a) {
 				// creating a new StatusBox window and editing its settings
-				StatusBox statBox = new StatusBox(recepientField);
+				StatusBox statBox = new StatusBox(recipientField);
 				statBox.setLocationRelativeTo(frmChatClient); 
 				statBox.pack();
 				statBox.setVisible(true);
@@ -180,8 +180,8 @@ public class ChatInterface {
 		
 		JLabel lblStatus = new JLabel("status:");
 		
-		recepientField = new JTextField(System.getProperty("user.name"));
-		recepientField.setColumns(10);
+		recipientField = new JTextField(System.getProperty("user.name"));
+		recipientField.setColumns(10);
 		
 		JCheckBox globalCheck = new JCheckBox("send to all");
 		globalCheck.addActionListener(new ActionListener() {
@@ -212,7 +212,7 @@ public class ChatInterface {
 							.addContainerGap()
 							.addComponent(recipientLabel)
 							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(recepientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(recipientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_satusPanel.setVerticalGroup(
@@ -230,7 +230,7 @@ public class ChatInterface {
 					.addComponent(globalCheck)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_satusPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(recepientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(recipientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(recipientLabel))
 					.addContainerGap())
 		);
@@ -244,6 +244,7 @@ public class ChatInterface {
 					String nickname = nicknameField.getText();
 					String text = input.getText();
 					
+					// sending the typed message to server
 					try {
 						sendMessage();
 					} catch (URISyntaxException | IOException e1) {
@@ -251,6 +252,7 @@ public class ChatInterface {
 						e1.printStackTrace();
 					}
 					
+					// adding message to output area an clearing input line
 					addMessage(nickname, text);
 					input.setText("");
 				}
@@ -282,11 +284,12 @@ public class ChatInterface {
 	
 	
 	/*
-	 *       ADDITIONAL FUNCTIONS
-	 * - not created in window builder -
+	 *     ADDITIONAL FUNCTIONS
+	 * - end of window builder code -
 	 */
 	
 	/**
+	 * Adds the typed message to the output area
 	 * @param person - the person sending the message
 	 * @param message - the message content
 	 */
@@ -295,6 +298,10 @@ public class ChatInterface {
 		output.setText(chat + "\n" + person + ": " + message);
 	}
 	
+	/**
+	 * adds contents of a received message to output area
+	 * @param message - the message to be added
+	 */
 	public void addMessage(Message message) {
 		String chat = output.getText();
 		String sender = message.getSender();
@@ -302,19 +309,23 @@ public class ChatInterface {
 		output.setText(chat + "\n" + sender + ": " + messageText);
 	}
 	
+	// login for the current user
 	public void login() throws ClientProtocolException, IOException, URISyntaxException {
 		ComCenter.login(this.nicknameField.getText());
 		inbox.activate();
 	}
 	
+	// logout for the current user
 	public void logout() throws ClientProtocolException, IOException, URISyntaxException {
 		ComCenter.logout(this.nicknameField.getText());
 		inbox.stop();
 	}
 	
+	// sends the message with current parameters in interface
 	protected void sendMessage() throws ClientProtocolException, URISyntaxException, IOException {
 		String nickname = this.nicknameField.getText();
-		ComCenter.sendMessage(nickname, global, nickname, this.input.getText());
+		String recipient = this.recipientField.getText();
+		ComCenter.sendMessage(nickname, global, recipient, this.input.getText());
 	}
 	
 	
@@ -324,14 +335,6 @@ public class ChatInterface {
 	
 	public JTextField getNicknameField() {
 		return nicknameField;
-	}
-
-	public String getRecepient() {
-		return recepientField.getText();
-	}
-	
-	public void setRecepient(String newRecepient) {
-		this.recepientField.setText(newRecepient);
 	}
 	
 }

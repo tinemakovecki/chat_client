@@ -45,7 +45,7 @@ public class StatusBox extends JFrame {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
 				String recipient = (String) comboBox.getSelectedItem();
-				setRecipientName(recipient);
+				currentRecipient.setText(recipient);
 			}
 		});
 		
@@ -59,10 +59,6 @@ public class StatusBox extends JFrame {
 	/*
 	 *  OTHER FUNCTIONS
 	 */
-	
-	public void setRecipientName (String username) { // NEEDLESS ??
-		currentRecipient.setText(username);
-	}
 	
 	// returns an array of active users on the server
 	// the array is used to create a JComboBox with possible recipients
