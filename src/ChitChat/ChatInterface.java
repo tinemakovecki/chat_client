@@ -1,51 +1,37 @@
 package ChitChat;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import java.awt.BorderLayout;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import com.jgoodies.forms.layout.FormLayout;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.FormSpecs;
-import javax.swing.JTextField;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
 import java.awt.Component;
-import javax.swing.JToggleButton;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JRadioButton;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
 import java.awt.Dimension;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.border.TitledBorder;
-
-import org.apache.http.client.ClientProtocolException;
-
-import javax.swing.UIManager;
-import javax.swing.JCheckBox;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import javax.swing.ButtonGroup;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
+
+import org.apache.http.client.ClientProtocolException;
 
 public class ChatInterface {
 
@@ -57,6 +43,11 @@ public class ChatInterface {
 	private JTextArea output;
 	private Boolean global;
 	private Inbox inbox;
+	private ParrotBot parrot;
+	private PrimeRobot primeRobo;
+	private JRadioButton login;
+	private Boolean isOnline;
+	private RenameWindow reWindow;
 
 	/**
 	 * Launch the application.
@@ -66,7 +57,6 @@ public class ChatInterface {
 			public void run() {
 				try {
 					ChatInterface window = new ChatInterface();
-					window.inbox = new Inbox(window);
 					window.frmChatClient.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -86,6 +76,8 @@ public class ChatInterface {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		this.isOnline = false;
+		this.global = false;
 		frmChatClient = new JFrame();
 		frmChatClient.setTitle("Chat client");
 		frmChatClient.setPreferredSize(new Dimension(300, 300));
@@ -113,6 +105,7 @@ public class ChatInterface {
 		nicknamePanel.add(nicknameLabel);
 		
 		nicknameField = new JTextField(System.getProperty("user.name"));
+		nicknameField.setEditable(false);
 		nicknameField.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		nicknamePanel.add(nicknameField);
 		nicknameField.setColumns(10);
@@ -140,11 +133,14 @@ public class ChatInterface {
 		gbc_satusPanel.gridy = 1;
 		frmChatClient.getContentPane().add(satusPanel, gbc_satusPanel);
 		
-		JRadioButton login = new JRadioButton("online");
+		login = new JRadioButton("online");
 		login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					login();
+					inbox = new Inbox(output, nicknameField);
+					inbox.activate();
+					isOnline = true;
 				} catch (IOException | URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -158,6 +154,7 @@ public class ChatInterface {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					logout();
+					isOnline = false;
 				} catch (IOException | URISyntaxException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -271,23 +268,66 @@ public class ChatInterface {
 		JMenu optionsMenu = new JMenu("options");
 		menuBar.add(optionsMenu);
 		
-		JMenuItem mntmNewMenuItem = new JMenuItem("placeholder1");
-		mntmNewMenuItem.setActionCommand("New Menu Item");
-		optionsMenu.add(mntmNewMenuItem);
+		JMenuItem changeNicknameMenuItem = new JMenuItem("change nickname");
+		changeNicknameMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				reWindow = new RenameWindow(nicknameField, output, isOnline, inbox);
+				reWindow.setLocationRelativeTo(frmChatClient); 
+				reWindow.pack();
+				reWindow.setVisible(true);
+			}
+		});
+		changeNicknameMenuItem.setActionCommand("New Menu Item");
+		optionsMenu.add(changeNicknameMenuItem);
 		
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("placeholder2");
-		optionsMenu.add(mntmNewMenuItem_1);
+		JMenu parrotBotMenu = new JMenu("parrot robot");
+		optionsMenu.add(parrotBotMenu);
 		
-		JMenuItem mntmNewMenuItem_2 = new JMenuItem("placeholder3");
-		optionsMenu.add(mntmNewMenuItem_2);
+		JMenuItem parrotOn = new JMenuItem("turn on");
+		parrotOn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String name = "The loudmouth parrot";
+				parrot = new ParrotBot(output, name);
+				parrot.speakUp();
+			}
+		});
+		parrotBotMenu.add(parrotOn);
+		
+		JMenuItem parrotOff = new JMenuItem("turn off");
+		parrotOff.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parrot.shutUp();
+			}
+		});
+		parrotBotMenu.add(parrotOff);
+		
+		JMenu primeRobotMenu = new JMenu("prime robot");
+		optionsMenu.add(primeRobotMenu);
+		
+		JMenuItem primerOn = new JMenuItem("turn on");
+		primerOn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				primeRobo = new PrimeRobot(output);
+				primeRobo.activate();
+			}
+		});
+		primeRobotMenu.add(primerOn);
+		
+		JMenuItem primerOff = new JMenuItem("turn off");
+		primerOff.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				primeRobo.stop();
+			}
+		});
+		primeRobotMenu.add(primerOff);
 	}
 	
 	
 	/*
-	 *     ADDITIONAL FUNCTIONS
+	 *       ADDITIONAL FUNCTIONS
 	 * - end of window builder code -
 	 */
-	
+
 	/**
 	 * Adds the typed message to the output area
 	 * @param person - the person sending the message
@@ -312,12 +352,15 @@ public class ChatInterface {
 	// login for the current user
 	public void login() throws ClientProtocolException, IOException, URISyntaxException {
 		ComCenter.login(this.nicknameField.getText());
-		inbox.activate();
 	}
 	
 	// logout for the current user
 	public void logout() throws ClientProtocolException, IOException, URISyntaxException {
 		ComCenter.logout(this.nicknameField.getText());
+		// there is some inconsistency with inbox management so double calling .stop() is more certain
+		if (reWindow != null) {
+			reWindow.getInbox().stop();
+		}
 		inbox.stop();
 	}
 	
@@ -335,6 +378,10 @@ public class ChatInterface {
 	
 	public JTextField getNicknameField() {
 		return nicknameField;
+	}
+	
+	public Boolean getIsOnline() {
+		return isOnline;
 	}
 	
 }

@@ -3,8 +3,11 @@ package ChitChat;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JTextArea;
+
 public class PrimeRobot extends TimerTask {
-	private ChatInterface chat;
+	private JTextArea output;
+	private Timer primerTimer;
 	private int k;
 	
 	private static boolean isPrime(int n) {
@@ -14,8 +17,8 @@ public class PrimeRobot extends TimerTask {
 		return true;
 	}
 
-	public PrimeRobot(ChatInterface chat) {
-		this.chat = chat;
+	public PrimeRobot(JTextArea output) {
+		this.output = output;
 		this.k = 2;
 	}
 
@@ -23,14 +26,23 @@ public class PrimeRobot extends TimerTask {
 	 * Activate the robot!
 	 */
 	public void activate() {
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(this, 5000, 1000);
+		this.primerTimer = new Timer();
+		this.primerTimer.scheduleAtFixedRate(this, 2000, 1000);
+	}
+	
+	// stop and reset the robot
+	public void stop() {
+		this.primerTimer.cancel();
+		this.primerTimer.purge();
+		this.primerTimer = null;
+		this.k = 2;
 	}
 	
 	@Override
 	public void run() {
 		if (isPrime(this.k)) {
-			chat.addMessage("primer", Integer.toString(this.k) + " is prime");
+			String chat = output.getText();
+			output.setText(chat + "\n" + "primer: " + Integer.toString(this.k) + " is prime");
 		}
 		this.k++;
 	}
