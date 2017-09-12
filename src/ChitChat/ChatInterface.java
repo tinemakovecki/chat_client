@@ -56,6 +56,7 @@ public class ChatInterface {
 	private JTextField textField;
 	private JTextArea output;
 	private Boolean global;
+	private Inbox inbox;
 
 	/**
 	 * Launch the application.
@@ -65,6 +66,7 @@ public class ChatInterface {
 			public void run() {
 				try {
 					ChatInterface window = new ChatInterface();
+					window.inbox = new Inbox(window);
 					window.frmChatClient.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -303,16 +305,34 @@ public class ChatInterface {
 		output.setText(chat + "\n" + person + ": " + message);
 	}
 	
+	public void addMessage(Message message) {
+		String chat = output.getText();
+		String sender = message.getSender();
+		String messageText = message.getText();
+		output.setText(chat + "\n" + sender + ": " + messageText);
+	}
+	
 	public void login() throws ClientProtocolException, IOException, URISyntaxException {
 		ComCenter.login(this.nicknameField.getText());
+		inbox.activate();
 	}
 	
 	public void logout() throws ClientProtocolException, IOException, URISyntaxException {
 		ComCenter.logout(this.nicknameField.getText());
+		inbox.stop();
 	}
 	
 	protected void sendMessage() throws ClientProtocolException, URISyntaxException, IOException {
 		String nickname = this.nicknameField.getText();
 		ComCenter.sendMessage(nickname, global, nickname, this.input.getText());
+	}
+	
+	
+	/*
+	 * GETTERS & SETTERS
+	 */
+	
+	public JTextField getNicknameField() {
+		return nicknameField;
 	}
 }
