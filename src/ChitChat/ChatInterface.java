@@ -169,22 +169,12 @@ public class ChatInterface {
 		
 		JButton getUsers = new JButton("online users");
 		getUsers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String address = "http://chitchat.andrej.com/users";
-				String jsonActiveUsers = ComCenter.get(address);
-				
-		    	// converting the data from json
-				ObjectMapper mapper = new ObjectMapper();
-		    	mapper.setDateFormat(new ISO8601DateFormat());
-		    	
-		    	TypeReference<List<User>> t = new TypeReference<List<User>>() { }; // TODO use this or delete
-		    	List<User> activeUsers = null;
-				try {
-					activeUsers = mapper.readValue(jsonActiveUsers, t);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+			public void actionPerformed(ActionEvent a) {
+				// creating a new StatusBox window and editing its settings
+				StatusBox statBox = new StatusBox(recepientField);
+				statBox.setLocationRelativeTo(frmChatClient); 
+				statBox.pack();
+				statBox.setVisible(true);
 			}
 		});
 		
@@ -335,4 +325,13 @@ public class ChatInterface {
 	public JTextField getNicknameField() {
 		return nicknameField;
 	}
+
+	public String getRecepient() {
+		return recepientField.getText();
+	}
+	
+	public void setRecepient(String newRecepient) {
+		this.recepientField.setText(newRecepient);
+	}
+	
 }

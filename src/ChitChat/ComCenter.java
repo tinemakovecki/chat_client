@@ -75,8 +75,6 @@ public class ComCenter {
     	return content;
     }
 	
-	// TODO fix return types for send/recieve!!!
-	// TODO add correct parameters, connect with GUI
 	public static List<Message> recieveMessages(String nickname) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 				.addParameter("username", nickname)
@@ -98,7 +96,6 @@ public class ComCenter {
     	return received;
 	}
 	
-	// TODO add variable for recipient/global, decide where to clear input
 	public static void sendMessage(String nickname, Boolean global, String recipient, String text) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 		        .addParameter("username", nickname)
