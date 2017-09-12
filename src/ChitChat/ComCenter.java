@@ -125,17 +125,33 @@ public class ComCenter {
 		        .addParameter("username", nickname)
 		        .build();
 		
-		// formatting the message to be sent
-		String message = "{ \"global\" :" + global + 
-				", \"recipient\" : \"" + recipient + 
-				"\", \"text\" : \"" + text + "\"}";
+		if (global) { 
+			// sending a global message
+			// formatting the message to be sent
+			String message = "{ \"global\" :" + global + 
+					"\", \"text\" : \"" + text + "\"}";
 
-		String responseBody = Request.Post(uri)
-		        .bodyString(message, ContentType.APPLICATION_JSON)
-		        .execute()
-		        .returnContent()
-		        .asString();
+			String responseBody = Request.Post(uri)
+			        .bodyString(message, ContentType.APPLICATION_JSON)
+			        .execute()
+			        .returnContent()
+			        .asString();
 
-		System.out.println("sending:" + responseBody);
+			System.out.println("globally sending:" + responseBody);
+		} else {
+			// sending a private message
+			// formatting the message to be sent
+			String message = "{ \"global\" :" + global + 
+					", \"recipient\" : \"" + recipient + 
+					"\", \"text\" : \"" + text + "\"}";
+
+			String responseBody = Request.Post(uri)
+					.bodyString(message, ContentType.APPLICATION_JSON)
+					.execute()
+					.returnContent()
+					.asString();
+
+			System.out.println("privately sending:" + responseBody);
+		}
 	}
 }
