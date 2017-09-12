@@ -53,7 +53,7 @@ public class ChatInterface {
 	private JTextField nicknameField;
 	private JTextField input;
 	private final ButtonGroup onlineStatus = new ButtonGroup();
-	private JTextField textField;
+	private JTextField recepientField;
 	private JTextArea output;
 	private Boolean global;
 	private Inbox inbox;
@@ -190,8 +190,8 @@ public class ChatInterface {
 		
 		JLabel lblStatus = new JLabel("status:");
 		
-		textField = new JTextField(System.getProperty("user.name"));
-		textField.setColumns(10);
+		recepientField = new JTextField(System.getProperty("user.name"));
+		recepientField.setColumns(10);
 		
 		JCheckBox globalCheck = new JCheckBox("send to all");
 		globalCheck.addActionListener(new ActionListener() {
@@ -200,7 +200,7 @@ public class ChatInterface {
 			}
 		});
 		
-		JLabel recipient = new JLabel("send to:");
+		JLabel recipientLabel = new JLabel("send to:");
 		GroupLayout gl_satusPanel = new GroupLayout(satusPanel);
 		gl_satusPanel.setHorizontalGroup(
 			gl_satusPanel.createParallelGroup(Alignment.LEADING)
@@ -220,9 +220,9 @@ public class ChatInterface {
 										.addComponent(logout)))))
 						.addGroup(Alignment.TRAILING, gl_satusPanel.createSequentialGroup()
 							.addContainerGap()
-							.addComponent(recipient)
+							.addComponent(recipientLabel)
 							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(recepientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
 		gl_satusPanel.setVerticalGroup(
@@ -240,8 +240,8 @@ public class ChatInterface {
 					.addComponent(globalCheck)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_satusPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(recipient))
+						.addComponent(recepientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(recipientLabel))
 					.addContainerGap())
 		);
 		satusPanel.setLayout(gl_satusPanel);

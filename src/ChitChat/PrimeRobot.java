@@ -4,7 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class PrimeRobot extends TimerTask {
-	private ChatFrame chat;
+	private ChatInterface chat;
 	private int k;
 	
 	private static boolean isPrime(int n) {
@@ -14,7 +14,7 @@ public class PrimeRobot extends TimerTask {
 		return true;
 	}
 
-	public PrimeRobot(ChatFrame chat) {
+	public PrimeRobot(ChatInterface chat) {
 		this.chat = chat;
 		this.k = 2;
 	}

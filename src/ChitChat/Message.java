@@ -72,13 +72,11 @@ public class Message {
 	}
 
 	@JsonProperty("sent_at")
-	public Date getSent_at() {
+	public Date getSentAt() {
 		return sent_at;
 	}
 
-	public void setSent_at(Date sent_at) {
+	public void setSentAt(Date sent_at) {
 		this.sent_at = sent_at;
 	}
-
-	
 }

@@ -18,7 +18,7 @@ public class Inbox extends TimerTask {
 	
 	public void activate() {
 		this.timer = new Timer();
-		timer.scheduleAtFixedRate(this, 5000, 1000);
+		timer.scheduleAtFixedRate(this, 1000, 1000);
 	}
 	
 	public void stop() {
