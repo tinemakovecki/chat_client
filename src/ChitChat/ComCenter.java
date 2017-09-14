@@ -128,7 +128,7 @@ public class ComCenter {
 		if (global) { 
 			// sending a global message
 			// formatting the message to be sent
-			String message = "{ \"global\" :" + global + 
+			String message = "{ \"global\" : \"" + global + 
 					"\", \"text\" : \"" + text + "\"}";
 
 			String responseBody = Request.Post(uri)

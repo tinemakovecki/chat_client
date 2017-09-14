@@ -359,7 +359,9 @@ public class ChatInterface {
 		ComCenter.logout(this.nicknameField.getText());
 		// there is some inconsistency with inbox management so double calling .stop() is more certain
 		if (reWindow != null) {
-			reWindow.getInbox().stop();
+			if (reWindow.getInbox() != null) {
+				reWindow.getInbox().stop();
+			}
 		}
 		inbox.stop();
 	}
