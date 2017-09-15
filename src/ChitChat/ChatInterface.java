@@ -19,6 +19,7 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -32,22 +33,23 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.apache.http.client.ClientProtocolException;
+import java.awt.Color;
 
 public class ChatInterface {
 
 	private JFrame frmChatClient;
-	private JTextField nicknameField;
 	private JTextField input;
-	private final ButtonGroup onlineStatus = new ButtonGroup();
-	private JTextField recipientField;
 	private JTextArea output;
 	private Boolean global;
 	private Inbox inbox;
 	private ParrotBot parrot;
 	private PrimeRobot primeRobo;
-	private JRadioButton login;
 	private Boolean isOnline;
 	private RenameWindow reWindow;
+	private JTextField nicknameField;
+	private JTextField recipientField;
+	private JPanel statusPanel;
+	private StatusBox statBox;
 
 	/**
 	 * Launch the application.
@@ -85,30 +87,10 @@ public class ChatInterface {
 		frmChatClient.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] {200, 400, 0};
-		gridBagLayout.rowHeights = new int[]{35, 14, 0, 0};
+		gridBagLayout.rowHeights = new int[]{35, 14, 0, 0, 0};
 		gridBagLayout.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		frmChatClient.getContentPane().setLayout(gridBagLayout);
-		
-		JPanel nicknamePanel = new JPanel();
-		nicknamePanel.setAlignmentY(Component.TOP_ALIGNMENT);
-		GridBagConstraints gbc_nicknamePanel = new GridBagConstraints();
-		gbc_nicknamePanel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_nicknamePanel.anchor = GridBagConstraints.NORTH;
-		gbc_nicknamePanel.insets = new Insets(0, 0, 5, 5);
-		gbc_nicknamePanel.gridx = 0;
-		gbc_nicknamePanel.gridy = 0;
-		frmChatClient.getContentPane().add(nicknamePanel, gbc_nicknamePanel);
-		nicknamePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		JLabel nicknameLabel = new JLabel("nickname:");
-		nicknamePanel.add(nicknameLabel);
-		
-		nicknameField = new JTextField(System.getProperty("user.name"));
-		nicknameField.setEditable(false);
-		nicknameField.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		nicknamePanel.add(nicknameField);
-		nicknameField.setColumns(10);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
@@ -125,113 +107,129 @@ public class ChatInterface {
 		output.setEditable(false);
 		scrollPane.setViewportView(output);
 		
-		JPanel satusPanel = new JPanel();
-		GridBagConstraints gbc_satusPanel = new GridBagConstraints();
-		gbc_satusPanel.insets = new Insets(0, 0, 5, 5);
-		gbc_satusPanel.fill = GridBagConstraints.BOTH;
-		gbc_satusPanel.gridx = 0;
-		gbc_satusPanel.gridy = 1;
-		frmChatClient.getContentPane().add(satusPanel, gbc_satusPanel);
+		statusPanel = new JPanel();
+		GridBagConstraints gbc_statusPanel = new GridBagConstraints();
+		gbc_statusPanel.weighty = 1.0;
+		gbc_statusPanel.weightx = 1.0;
+		gbc_statusPanel.gridheight = 2;
+		gbc_statusPanel.insets = new Insets(0, 0, 5, 5);
+		gbc_statusPanel.fill = GridBagConstraints.BOTH;
+		gbc_statusPanel.gridx = 0;
+		gbc_statusPanel.gridy = 0;
+		frmChatClient.getContentPane().add(statusPanel, gbc_statusPanel);
+		GridBagLayout gbl_statusPanel = new GridBagLayout();
+		gbl_statusPanel.columnWidths = new int[]{114, 59, 0};
+		gbl_statusPanel.rowHeights = new int[]{0, 16, 24, 24, 0, 26, 24, 20, 0, 0, 0};
+		gbl_statusPanel.columnWeights = new double[]{1.0, 0.0, Double.MIN_VALUE};
+		gbl_statusPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		statusPanel.setLayout(gbl_statusPanel);
 		
-		login = new JRadioButton("online");
-		login.addActionListener(new ActionListener() {
+		JLabel nicknameLabel = new JLabel("nickname:");
+		GridBagConstraints gbc_nicknameLabel = new GridBagConstraints();
+		gbc_nicknameLabel.anchor = GridBagConstraints.EAST;
+		gbc_nicknameLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_nicknameLabel.gridx = 0;
+		gbc_nicknameLabel.gridy = 1;
+		statusPanel.add(nicknameLabel, gbc_nicknameLabel);
+		
+		nicknameField = new JTextField();
+		nicknameField.setEditable(false);
+		nicknameField.setText("Tine");
+		GridBagConstraints gbc_nicknameField = new GridBagConstraints();
+		gbc_nicknameField.anchor = GridBagConstraints.SOUTH;
+		gbc_nicknameField.insets = new Insets(0, 0, 5, 0);
+		gbc_nicknameField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_nicknameField.gridx = 1;
+		gbc_nicknameField.gridy = 1;
+		statusPanel.add(nicknameField, gbc_nicknameField);
+		nicknameField.setColumns(10);
+		
+		JButton nicknameButton = new JButton("change nickname");
+		nicknameButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				reWindow = new RenameWindow(nicknameField, output, isOnline, inbox);
+				reWindow.setLocationRelativeTo(frmChatClient); 
+				reWindow.pack();
+				reWindow.setVisible(true);
+			}
+		});
+		GridBagConstraints gbc_nicknameButton = new GridBagConstraints();
+		gbc_nicknameButton.gridwidth = 2;
+		gbc_nicknameButton.insets = new Insets(0, 0, 5, 0);
+		gbc_nicknameButton.gridx = 0;
+		gbc_nicknameButton.gridy = 2;
+		statusPanel.add(nicknameButton, gbc_nicknameButton);
+		
+		JLabel lblStatus = new JLabel("status:");
+		GridBagConstraints gbc_lblStatus = new GridBagConstraints();
+		gbc_lblStatus.anchor = GridBagConstraints.EAST;
+		gbc_lblStatus.insets = new Insets(0, 0, 5, 5);
+		gbc_lblStatus.gridx = 0;
+		gbc_lblStatus.gridy = 4;
+		statusPanel.add(lblStatus, gbc_lblStatus);
+		
+		JLabel onlineOfflineLabel = new JLabel("offline");
+		onlineOfflineLabel.setForeground(Color.RED);
+		GridBagConstraints gbc_onlineOfflineLabel = new GridBagConstraints();
+		gbc_onlineOfflineLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_onlineOfflineLabel.gridx = 1;
+		gbc_onlineOfflineLabel.gridy = 4;
+		statusPanel.add(onlineOfflineLabel, gbc_onlineOfflineLabel);
+		
+		JButton logButton = new JButton("log in");
+		logButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					login();
-					inbox = new Inbox(output, nicknameField);
-					inbox.activate();
-					isOnline = true;
-				} catch (IOException | URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if (isOnline) {
+					onlineOfflineLabel.setText("offline");
+					onlineOfflineLabel.setForeground(Color.red);
+					logButton.setText("log in");
+					
+					try {
+						logout();
+						isOnline = false;
+					} catch (IOException | URISyntaxException x) {
+						// TODO Auto-generated catch block
+						x.printStackTrace();
+					}
+					
+				} else {
+					onlineOfflineLabel.setText("online");
+					onlineOfflineLabel.setForeground(Color.green);
+					logButton.setText("log out");
+					
+					try {
+						login();
+						inbox = new Inbox(output, nicknameField);
+						inbox.activate();
+						isOnline = true;
+					} catch (IOException | URISyntaxException x) {
+						// TODO Auto-generated catch block
+						x.printStackTrace();
+					}
 				}
 			}
 		});
-		onlineStatus.add(login);
+		GridBagConstraints gbc_logButton = new GridBagConstraints();
+		gbc_logButton.insets = new Insets(0, 0, 5, 0);
+		gbc_logButton.gridx = 1;
+		gbc_logButton.gridy = 5;
+		statusPanel.add(logButton, gbc_logButton);
 		
-		JRadioButton logout = new JRadioButton("offline");
-		logout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					logout();
-					isOnline = false;
-				} catch (IOException | URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		logout.setSelected(true);
-		onlineStatus.add(logout);
-		
-		JButton getUsers = new JButton("online users");
-		getUsers.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent a) {
+		JButton btnWhosOnlio = new JButton("who's online");
+		btnWhosOnlio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
 				// creating a new StatusBox window and editing its settings
-				StatusBox statBox = new StatusBox(recipientField);
+				statBox = new StatusBox(recipientField);
 				statBox.setLocationRelativeTo(frmChatClient); 
 				statBox.pack();
 				statBox.setVisible(true);
 			}
 		});
-		
-		JLabel lblStatus = new JLabel("status:");
-		
-		recipientField = new JTextField(System.getProperty("user.name"));
-		recipientField.setColumns(10);
-		
-		JCheckBox globalCheck = new JCheckBox("send to all");
-		globalCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				global = globalCheck.isSelected();
-			}
-		});
-		
-		JLabel recipientLabel = new JLabel("send to:");
-		GroupLayout gl_satusPanel = new GroupLayout(satusPanel);
-		gl_satusPanel.setHorizontalGroup(
-			gl_satusPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_satusPanel.createSequentialGroup()
-					.addGroup(gl_satusPanel.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_satusPanel.createSequentialGroup()
-							.addGap(28)
-							.addGroup(gl_satusPanel.createParallelGroup(Alignment.LEADING)
-								.addComponent(globalCheck)
-								.addComponent(getUsers)
-								.addGroup(gl_satusPanel.createSequentialGroup()
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(lblStatus)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addGroup(gl_satusPanel.createParallelGroup(Alignment.LEADING)
-										.addComponent(login)
-										.addComponent(logout)))))
-						.addGroup(Alignment.TRAILING, gl_satusPanel.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(recipientLabel)
-							.addPreferredGap(ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-							.addComponent(recipientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
-					.addContainerGap())
-		);
-		gl_satusPanel.setVerticalGroup(
-			gl_satusPanel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_satusPanel.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_satusPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(login)
-						.addComponent(lblStatus))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(logout)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(getUsers)
-					.addPreferredGap(ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
-					.addComponent(globalCheck)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(gl_satusPanel.createParallelGroup(Alignment.BASELINE)
-						.addComponent(recipientField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(recipientLabel))
-					.addContainerGap())
-		);
-		satusPanel.setLayout(gl_satusPanel);
+		GridBagConstraints gbc_btnWhosOnlio = new GridBagConstraints();
+		gbc_btnWhosOnlio.insets = new Insets(0, 0, 5, 0);
+		gbc_btnWhosOnlio.gridx = 1;
+		gbc_btnWhosOnlio.gridy = 8;
+		statusPanel.add(btnWhosOnlio, gbc_btnWhosOnlio);
 		
 		input = new JTextField();
 		input.addKeyListener(new KeyAdapter() {
@@ -240,6 +238,12 @@ public class ChatInterface {
 				if (key.getKeyChar() == '\n') {
 					String nickname = nicknameField.getText();
 					String text = input.getText();
+					
+					// check if message is global
+					if (statBox != null) {
+						global = statBox.getGlobal();
+					}
+					System.out.println("global = " + global);
 					
 					// sending the typed message to server
 					try {
@@ -256,11 +260,44 @@ public class ChatInterface {
 			}
 		});
 		GridBagConstraints gbc_input = new GridBagConstraints();
-		gbc_input.fill = GridBagConstraints.HORIZONTAL;
+		gbc_input.gridheight = 2;
+		gbc_input.insets = new Insets(0, 0, 5, 0);
+		gbc_input.fill = GridBagConstraints.BOTH;
 		gbc_input.gridx = 1;
 		gbc_input.gridy = 2;
 		frmChatClient.getContentPane().add(input, gbc_input);
 		input.setColumns(10);
+		
+		JPanel panel = new JPanel();
+		GridBagConstraints gbc_panel = new GridBagConstraints();
+		gbc_panel.insets = new Insets(0, 0, 0, 5);
+		gbc_panel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_panel.gridx = 0;
+		gbc_panel.gridy = 2;
+		frmChatClient.getContentPane().add(panel, gbc_panel);
+		GridBagLayout gbl_panel = new GridBagLayout();
+		gbl_panel.columnWidths = new int[]{65, 45, 0};
+		gbl_panel.rowHeights = new int[]{16, 0};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, Double.MIN_VALUE};
+		panel.setLayout(gbl_panel);
+		
+		JLabel recipientLabel = new JLabel("send to:");
+		GridBagConstraints gbc_recipientLabel = new GridBagConstraints();
+		gbc_recipientLabel.insets = new Insets(0, 0, 0, 5);
+		gbc_recipientLabel.anchor = GridBagConstraints.NORTHEAST;
+		gbc_recipientLabel.gridx = 0;
+		gbc_recipientLabel.gridy = 0;
+		panel.add(recipientLabel, gbc_recipientLabel);
+		
+		recipientField = new JTextField();
+		recipientField.setText("Tine");
+		GridBagConstraints gbc_recipientField = new GridBagConstraints();
+		gbc_recipientField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_recipientField.gridx = 1;
+		gbc_recipientField.gridy = 0;
+		panel.add(recipientField, gbc_recipientField);
+		recipientField.setColumns(10);
 		
 		JMenuBar menuBar = new JMenuBar();
 		frmChatClient.setJMenuBar(menuBar);
@@ -268,13 +305,33 @@ public class ChatInterface {
 		JMenu optionsMenu = new JMenu("options");
 		menuBar.add(optionsMenu);
 		
-		JMenuItem changeNicknameMenuItem = new JMenuItem("change nickname");
+		JMenuItem changeNicknameMenuItem = new JMenuItem("logall");
 		changeNicknameMenuItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				reWindow = new RenameWindow(nicknameField, output, isOnline, inbox);
-				reWindow.setLocationRelativeTo(frmChatClient); 
-				reWindow.pack();
-				reWindow.setVisible(true);
+				try {
+					ComCenter.login("a");
+				} catch (IOException | URISyntaxException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					ComCenter.login("b");
+				} catch (IOException | URISyntaxException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					ComCenter.login("c");
+				} catch (IOException | URISyntaxException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				try {
+					ComCenter.login("d");
+				} catch (IOException | URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		changeNicknameMenuItem.setActionCommand("New Menu Item");
@@ -328,6 +385,7 @@ public class ChatInterface {
 	 * - end of window builder code -
 	 */
 
+
 	/**
 	 * Adds the typed message to the output area
 	 * @param person - the person sending the message
@@ -363,7 +421,9 @@ public class ChatInterface {
 				reWindow.getInbox().stop();
 			}
 		}
-		inbox.stop();
+		if (inbox != null) {
+			inbox.stop();
+		}
 	}
 	
 	// sends the message with current parameters in interface
@@ -386,4 +446,15 @@ public class ChatInterface {
 		return isOnline;
 	}
 	
+	public void setRecipient(String name) {
+		recipientField.setText(name);
+	}
+	
+	public JPanel getStatusPanel() {
+		return statusPanel;
+	}
+	
+	public void setIsOnline(Boolean isOnline) {
+		this.isOnline = isOnline;
+	}
 }

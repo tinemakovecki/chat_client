@@ -21,10 +21,13 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 @SuppressWarnings("serial")
 public class StatusBox extends JFrame {
 	private JTextField currentRecipient;
+	private Boolean global;
 	
 	public StatusBox (JTextField recipientField) {
 		super();
 		this.currentRecipient  = recipientField;
+		this.global = false;
+		this.setTitle("who's online");
 		
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
@@ -45,6 +48,11 @@ public class StatusBox extends JFrame {
 				@SuppressWarnings("unchecked")
 				JComboBox<String> comboBox = (JComboBox<String>) e.getSource();
 				String recipient = (String) comboBox.getSelectedItem();
+				if (recipient == "everyone") {
+					global = true;
+				} else {
+					global = false;
+				}
 				currentRecipient.setText(recipient);
 			}
 		});
@@ -81,15 +89,20 @@ public class StatusBox extends JFrame {
 		
 		// organising the user names into an array
 		int len = activeUsers.size();
-		String[] users = new String[len];
+		String[] users = new String[len + 1];
 		if (activeUsers.isEmpty() != true) {
 			for (int k = 0; k < len; k++) {
 				String username = activeUsers.get(k).getUsername();
 				users[k] = username;
 			}
 		}
+		users[len] = "everyone";
 		
 		return users;
+	}
+
+	public Boolean getGlobal() {
+		return global;
 	}
 	
 	
