@@ -124,9 +124,8 @@ public class ChatInterface {
 		gbl_statusPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		statusPanel.setLayout(gbl_statusPanel);
 		
-		JLabel nicknameLabel = new JLabel("nickname:");
+		JLabel nicknameLabel = new JLabel("user:");
 		GridBagConstraints gbc_nicknameLabel = new GridBagConstraints();
-		gbc_nicknameLabel.anchor = GridBagConstraints.EAST;
 		gbc_nicknameLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_nicknameLabel.gridx = 0;
 		gbc_nicknameLabel.gridy = 1;
@@ -304,38 +303,6 @@ public class ChatInterface {
 		
 		JMenu optionsMenu = new JMenu("options");
 		menuBar.add(optionsMenu);
-		
-		JMenuItem changeNicknameMenuItem = new JMenuItem("logall");
-		changeNicknameMenuItem.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					ComCenter.login("a");
-				} catch (IOException | URISyntaxException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				try {
-					ComCenter.login("b");
-				} catch (IOException | URISyntaxException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				try {
-					ComCenter.login("c");
-				} catch (IOException | URISyntaxException e2) {
-					// TODO Auto-generated catch block
-					e2.printStackTrace();
-				}
-				try {
-					ComCenter.login("d");
-				} catch (IOException | URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-			}
-		});
-		changeNicknameMenuItem.setActionCommand("New Menu Item");
-		optionsMenu.add(changeNicknameMenuItem);
 		
 		JMenu parrotBotMenu = new JMenu("parrot robot");
 		optionsMenu.add(parrotBotMenu);
